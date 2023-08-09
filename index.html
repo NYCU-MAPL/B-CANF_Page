@@ -73,7 +73,7 @@
     </div>      
       <div class="container" id="method">
         <h2>Method</h2>
-        <h3>Frame-type Adaptive Coding</h3>
+        <h3><b>Frame-type Adaptive Coding</b></h3>
         <p style="text-align:center;">
           <a href="assets/figures/architecture.png" data-lightbox="architecture"><img src="assets/figures/architecture.png" width="100%"></a>
         </p>
@@ -81,34 +81,17 @@
         <p>
           Frame-type adaptive coding aims to achieve adaptive coding according to the reference types of B-frames. In traditional codecs, the reference B-frames are usually coded at higher
           quality than the non-reference B-frames by operating the same B-frame codec in different modes. Following a similar strategy, we weight more heavily the distortions of the reference
-          B-frames and B*-frames during training and introduces a frame-type adaptation (FA), as shown in figure (b).<br \><br \>
-
-          The FA moduels aim to share the convolutional layers between B-frames while adapting their features to the B-frame type. 
-          Specifically, according to the B-frame type (namely, reference B-frames, non-reference Bframes, or B*-frames), our FA module applies a channel-wise affine transformation to the output features of every
-          convolutional layer. Take as an example the analysis transform in figure (a). The FA module is inserted between the convolutional layer and the generalized divisive normalization (GDN) layer.
-          It takes B-frame type M (in one-hot vector) as input and generates the affine transform parameters $\gamma$ and $\beta$ for feature $F$ adaptation by $\text{FA}(F|M) =\gamma(M)\odot F\oplus\beta(M)$.
+          B-frames and B*-frames during training and introduces a frame-type adaptation (FA), as shown in figure (b).
         </p>
-        <h3>B*-frame Extension</h3>
+        <h3><b>B*-frame Extension</b></h3>
         <p style="text-align:center;">
           <a href="assets/figures/overall_diagram_b.png" data-lightbox="arch"><img src="assets/figures/overall_diagram_b.png" data-lightbox="overall_diargam_b"
               width="80%"></a>
         </p>
         <br>
         <p>
-          We propose B*-frames, which reuse our CANF-based B-frame codec to mimic P-frame coding that allows to support multiple GOPs in an intraperiod.
-          Shown in figure above, to encode a video frame $x_t$ in B* mode, we create a predicted frame from the past decoded frame $x_{t-k}$ just like
-          coding a vanilla P-frame. To this end, the flow map $m^e_{t\to t-k}$ between $x_t$ and $x_{t-k}$ is estimated and coded. 
-          
-          The main inputs to our conditional motion codec should ideally comprise two optical flow maps. We generate the other "virtual" input by flipping the sign of $m^e_{t\to t-k}$ 
-          (i.e. $-1 \times m^e_{t\to t-k}$), in order to match the characteristics of  $m^e_{t\to t+k}$. <br \> <br \>
-          
-          Because only one reference frame $x_{t-k}$ is used, we disable motion prediction network and set the predicted flow maps to constant 0. 
-          This reduces our motion coding scheme for B*-frames to intra-based motion coding. 
-          The predicted frame $\hat{x}^c_t$ is then synthesized from the reference frames based on the coded  $m^e_{t\to t-k}$ and
-          its virtual counterpart (after sign reversal), which are found empirically to be similar but not exactly the same. 
-          As such, the B*-frame is by definition a bi-prediction frame. 
-
-          Our ablation experiments in Section IV-D (<a href="assets/paper.pdf">paper</a>). show that B*-frames have similar compression performance to P-frames, which require an additional, separate P-frame codec.
+          We propose B*-frames, which reuse our CANF-based B-frame codec to mimic P-frame coding that allows to support multiple GOPs in an intraperiod, as shown in figure above.
+          Our ablation experiments in Section IV-D (<a href="assets/paper.pdf">paper</a>) show that B*-frames have similar compression performance to P-frames, which require an additional, separate P-frame codec.
         </p>
       </div>   
       
