@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>B-CANF: Adaptive B-frame Coding with Conditional Augmented Normalizing Flows</title>
+  <script type="text/javascript" src="assets/latexit.js"></script>
+  <script type="text/javascript">
+    LatexIT.add('p', true);
+  </script>
+
+  <!-- CSS includes -->
+  <link href="assets/bootstrap.css" rel="stylesheet">
+  <link href="assets/css.css" rel="stylesheet" type="text/css">
+  <link href="assets/mystyle.css" rel="stylesheet">
+  <link href="assets/lightbox2-2.11.3/dist/css/lightbox.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+  <div id="header" class="container-fluid">
+    <div class="row">
+      <h1>B-CANF: Adaptive B-frame Coding with <br />Conditional Augmented Normalizing Flows</h1>
+      <div class="authors">
+        Mu-Jung Chen, Yi-Hsin Chen, Wen-Hsiao Peng
+      </div>
+      <div class="conference">
+        TCSVT 2023
+      </div>
+    </div>
+
+    <p style="text-align:center;">
+      <a href="https://en.nycu.edu.tw/" target="_blank"><img src="assets/210204-NYCU (1).png" height="80"></a>
+       
+      <a href="http://mapl.nctu.edu.tw/" target="_blank"><img src="assets/mapl_logo.png" height="100"></a>
+    </p>
+  </div>
+  <div class="container" id="abstractdiv">
+    <h2>Abstract</h2>
+    Over the past few years, learning-based video compression has become an active research area. However, 
+    most works focus on P-frame coding. Learned B-frame coding is under-explored and more challenging. 
+    This work introduces a novel B-frame coding framework, termed B-CANF, that exploits conditional augmented normalizing flows for B-frame coding.
+    B-CANF additionally features two novel elements: frame-type adaptive coding and B*-frames. Our frame-type adaptive coding
+    learns better bit allocation for hierarchical B-frame coding by dynamically adapting the feature distributions according to
+    the B-frame type. Our B*-frames allow greater flexibility in specifying the group-of-pictures (GOP) structure by reusing the
+    B-frame codec to mimic P-frame coding, without the need for an additional, separate P-frame codec. On commonly used datasets,
+    B-CANF achieves the state-of-the-art compression performance as compared to the other learned B-frame codecs.
+  </div>
+
+  <div class="container" id="banner">
+    <h2>Overview</h2>
+    <p style="text-align:center;">
+      <a href="assets/figures/overall_diagram.png" data-lightbox="arch"><img src="assets/figures/overall_diagram.png" data-lightbox="overall_diargam"
+          width="90%"></a>
+    </p>
+    <br>
+    <p>
+      The figure illustrates the proposed B-frame codec configured for coding B-frames (reference and non-reference) and B*-frames. $x_t$ represents the
+      current coding frame and $\hat{x}_{t-k}$, $\hat{x}_{t+k}$ are the previously reconstructed reference frames. ME-Net estimates the optical flow maps $m^e_{t\to t-k}$, $m^e_{t\to t+k}$ between
+      $x_t$ and its reference frames $\hat{x}_{t-k}$, $\hat{x}_{t+k}$, respectively. The motion prediction network outputs the predicted optical flow maps $m^p_{t\to t-k}$, $m^p_{t\to t+k}$, 
+      which serve as the conditioning signals for the motion codec. The frame synthesis network fuses the reference frames using the reconstructed optical flow maps
+      $\hat{m}_{t\to t-k}$, $\hat{m}_{t\to t+k}$ to generate the predicted frame $x^c_t$, which acts as the conditioning signal for the inter-frame codec.
+      M indicates the frame type (reference B, non-reference B, B*-frame).
+    </p>
+    </div>      
+      <div class="container" id="method">
+        <h2>Method</h2>
+        <p style="text-align:center;">
+          <a href="assets/figures/architecture.png" data-lightbox="architecture"><img src="assets/figures/architecture.png" width="100%"></a>
+        </p>
+        <br>
+        <p>
+          Frame-type adaptive coding aims to achieve adaptive coding according to the reference types of B-frames. In traditional codecs, the reference B-frames are usually coded at higher
+          quality than the non-reference B-frames by operating the same B-frame codec in different modes. Following a similar strategy, we weight more heavily the distortions of the reference
+          B-frames and B*-frames during training and introduces a frame-type adaptation (FA), as shown in figure (b).<br \><br \>
+
+          The FA moduels aim to share the convolutional layers between B-frames while adapting their features to the B-frame type. 
+          Specifically, according to the B-frame type (namely, reference B-frames, non-reference Bframes, or B*-frames), our FA module applies a channel-wise affine transformation to the output features of every
+          convolutional layer. Take as an example the analysis transform in figure (a). The FA module is inserted between the convolutional layer and the generalized divisive normalization (GDN) layer.
+          It takes B-frame type M (in one-hot vector) as input and generates the affine transform parameters $\gamma$ and $\beta$ for feature $F$ adaptation by $\text{FA}(F|M) =\gamma(M)\odot F\oplus\beta(M)$.
+        </p>
+      </div>
+      
+      <div class="container" id="paperdiv">
+        <h2>Paper</h2>
+        <a href="assets/paper.pdf"
+          download="B-CANF: Adaptive B-frame Coding with Conditional Augmented Normalizing Flows">
+          <div class="thumbs">
+        <img src="assets/thumbnails/0001.jpg" width="19%">
+        <img src="assets/thumbnails/0002.jpg" width="19%">
+        <img src="assets/thumbnails/0003.jpg" width="19%">
+        <img src="assets/thumbnails/0004.jpg" width="19%">
+        <img src="assets/thumbnails/0005.jpg" width="19%">
+      </div>
+    </a>
+
+    <div class="container" id="exp_results">
+      <h2>Rate-distortion Results</h2>
+      <p>
+        The figure presents the rate-distortion plots on UVG, MCL-JCV, HEVC Class B and CLIC'22 test dataset in terms of PSNR-RGB and MS-SSIM-RGB.
+        When comparing our B-CANF with our previosu work, <a href="https://arxiv.org/abs/2207.05315">CANF-VC</a> and the state-of-the-art B-frame codec, LHBDC, 
+        we observe that B-CANF surpasses them in terms of both PSNR-RGB and MS-SSIM-RGB across all the test datasets. <br \> <br \>
+        
+        However, B-CANF falls short of achieving the same level of performance as the state-of-the-art Li'22 (DCVC-HEM), 
+        which is considered the state-of-the-art learned P-frame codec. This discrepancy in performance can be attributed to the more advanced entropy
+        coding model employed by Li'22 and the domain shift issue that arises between the training and testing phases. For a comprehensive analysis of this domain shift, 
+        please refer to Section IV-C in our <a href="assets/paper.pdf">paper</a>.
+      </p>
+        <p style="text-align:center;"><br>
+          <a href="assets/figures/RD.png" data-lightbox="RD"><img src="assets/figures/RD.png" data-lightbox="RD"
+              width="100%"></a>
+        </p>
+    </div>
+
+    <div class="container" id="complexity">
+      <h2>Complexity Analysis</h2>
+      <p>
+        Table presents a breakdown analysis of the encoding runtime and peak memory requirement for B-CANF. 
+        For runtime measurement, we encode a 1080p video 10 times and take the average of the encoding runtimes. 
+        The unit of peak memory measurement is "full-res" (i.e. the spatial resolution of the input image), where one reconstructed frame occupies the equivalent of 3 full-res.
+      
+      </p><br>
+        <p style="text-align:center;">
+          <a href="assets/figures/complexity.png" data-lightbox="complexity"><img src="assets/figures/complexity.png" data-lightbox="complexity"
+            width="50%"></a>
+        </p>
+    </div>
+
+    <div class="container" id="subjective">
+      <h2>Qualitative Comparison</h2>
+      <p>
+        The figure presents the subjective quality comparison. It is seen that our B-CANF (MSE)
+        achieves comparable or even better subjective quality than LHBDC (MSE), with its bit rate being nearly one order of
+        magnitude smaller than that of LHBDC (MSE). Compared with HM (randomaccess), our B-CANF (SSIM) preserves
+        more texture details (cf. patterns on fingers in the first row, pillars in the second row, and textures in the last row) at a
+        lower bit rate.
+      </p>
+        <p><br>
+          <a href="assets/figures/subjective.png" data-lightbox="subjective"><img src="assets/figures/subjective.png" data-lightbox="subjective"
+            width="100%"></a>
+        </p>
+    </div>
+
+    <div id=footer><br></div>
+    <!-- Javascript includes -->
+    <script src="assets/jquery-1.js"></script>
+    <script src="assets/bootstrap.js"></script>
+    <script src="assets/lightbox2-2.11.3/dist/js/lightbox.js"></script>
+
+
+</body>
+
+</html>
